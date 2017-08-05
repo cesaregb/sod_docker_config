@@ -1,0 +1,41 @@
+mysql:
+  image: mysql:latest
+  command: mysqld --user=root --verbose
+  environment:
+    - MYSQL_ROOT_PASSWORD: 'ROOT_PASSWORD'
+    - MYSQL_DATABASE: 'homeassistant'
+    - MYSQL_USER: 'hass'
+    - MYSQL_PASSWORD: 'DB_PASSWORD'
+  volumes:
+    - ./db-dump:/docker-entrypoint-initdb.d
+    - mysql_data:/var/lib/mysql
+    - ./import.sh:/tmp/import.sh
+  ports:
+    - "3306:3306"
+volumes:
+  mysql_data:/var/lib/mysql
+
+services:
+  image: cesaregb/base_services
+  command: mvn compile exec:java
+  ports:
+    - "8080:8080"
+  env_file:
+    - ./common.env
+db:
+  image: mongo
+  ports:
+    - "27017:27017"
+  command: "--smallfiles --logpath=/dev/null"
+web:
+  image: interactivelabs/process-admin
+  command: npm start
+  volumes:
+    - "./node_app:/myapp"
+  ports:
+    - "9000:9000"
+  links:
+    - "db:mongo"
+    - "services:services"
+  env_file:
+    - ./common.env
