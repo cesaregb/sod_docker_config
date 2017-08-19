@@ -26,7 +26,7 @@ elif [ $1 = "deploy_web" ]; then
 	IMAGE="interactivelabs/laundry-web"
 	docker ps | grep $IMAGE | awk '{print $1}' | xargs docker stop
 	docker pull $IMAGE
-	docker run -p 3000:3000 -d $IMAGE
+	docker run -p 80:3000 -d $IMAGE
 elif [ $1 = "deploy_admin" ]; then
 	echo "[Info] Deploying interactivelabs/process-admin"
 	IMAGE="interactivelabs/process-admin"
