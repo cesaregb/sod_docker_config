@@ -1,2 +1,3 @@
 
-deploymentUtils/common-prod.env
+common-prod.env
+db-dump.sql
