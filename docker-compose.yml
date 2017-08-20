@@ -1,0 +1,45 @@
+mysql:
+  image: mysql
+  volumes:
+    - ./db-dump.sql:/docker-entrypoint-initdb.d/db-dump.sql
+    - ./db-dump.sql:/tmp/db-dump.sql
+  environment:
+    MYSQL_ROOT_PASSWORD: 'Welcome1'
+    MYSQL_USER: 'sod_user'
+    MYSQL_PASSWORD: 'Welcome1'
+  # ports:
+  #   - "3307:3306"
+db:
+  image: mongo
+  ports:
+    - "27017:27017"
+  command: "--smallfiles --logpath=/dev/null"
+services:
+  image: cesaregb/base_services
+  command: mvn compile exec:java
+  ports:
+    - "8080:8080"
+  env_file:
+    - ./common.env
+  links:
+    - "mysql:mysql"
+admin_web:
+  image: cesaregb/process-admin
+  command: npm start
+  volumes:
+    - "./node_app:/myapp"
+  ports:
+    - "9000:9000"
+  links:
+    - "db:mongo"
+    - "services:services"
+  env_file:
+    - ./common.env
+# web:
+#   image: interactivelabs/laundry-web
+#   volumes:
+#     - "./node_app:/myapp"
+#   ports:
+#     - "3000:3000"
+#   env_file:
+#     - ./common.env
